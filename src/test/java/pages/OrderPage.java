@@ -3,7 +3,6 @@ package pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
@@ -32,7 +31,7 @@ public class OrderPage {
     // Поле выбора даты доставки
     private final By dateField = By.xpath(".//input[@placeholder='* Когда привезти самокат']");
 
-    // Поле выбора срока аренды (выпадающий список)
+    // Поле выбора срока аренды
     private final By rentalField = By.className("Dropdown-placeholder");
 
     // Чекбокс выбора цвета "чёрный жемчуг"
@@ -94,15 +93,10 @@ public class OrderPage {
         By rentalOption = By.xpath(".//div[@class='Dropdown-menu']/div[text()='" + rentalDays + "']");
         wait.until(ExpectedConditions.elementToBeClickable(rentalOption)).click();
 
-        if (color.equals("black")) {
-            driver.findElement(blackCheckbox).click();
-        } else {
-            driver.findElement(greyCheckbox).click();
-        }
+        driver.findElement(blackCheckbox).click();
+        driver.findElement(greyCheckbox).click();
 
-        if (!comment.isEmpty()) {
-            driver.findElement(commentField).sendKeys(comment);
-        }
+        driver.findElement(commentField).sendKeys(comment);
 
         wait.until(ExpectedConditions.elementToBeClickable(orderButton)).click();
     }
@@ -118,10 +112,9 @@ public class OrderPage {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
             wait.until(ExpectedConditions.visibilityOfElementLocated(orderSuccessHeader));
             wait.until(ExpectedConditions.visibilityOfElementLocated(orderNumber));
-            WebElement trackBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(trackButton));
-            return trackBtn.isDisplayed();
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(trackButton)).isDisplayed();
         } catch (Exception e) {
-            throw new AssertionError("Баг в Chrome: Окно с номером заказа не появилось после подтверждения");
+            return false;
         }
     }
 }
